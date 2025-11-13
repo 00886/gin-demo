@@ -3,6 +3,8 @@ package middlerware
 import (
 	"gin-demo/util/jwt"
 	"gin-demo/util/logging"
+	"gin-demo/util/response"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -16,10 +18,7 @@ func JwtAuth(r *gin.Context) {
 	if token := r.GetHeader("Authorization"); token != "" {
 		claims, err := jwt.ParseToken(token)
 		if err != nil {
-			r.JSON(200, gin.H{
-				"code":    1,
-				"message": "解析token失败",
-			})
+			response.Ng(r, "解析token失败")
 			r.Abort()
 			return
 		}
@@ -28,10 +27,7 @@ func JwtAuth(r *gin.Context) {
 			"过期时间": claims.ExpiresAt,
 		}, "解析token成功")
 	} else {
-		r.JSON(200, gin.H{
-			"code":    1,
-			"message": "用户未登录，请登录用户",
-		})
+		response.Ng(r, "用户未登录，请登录用户")
 		r.Abort()
 	}
 }

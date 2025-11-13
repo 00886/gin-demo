@@ -2,11 +2,11 @@ package main
 
 import (
 	"gin-demo/config"
-	_ "gin-demo/config"
 	"gin-demo/middlerware"
 	"gin-demo/router"
+
+	"github.com/gin-gonic/gin"
 )
-import "github.com/gin-gonic/gin"
 
 func main() {
 	r := gin.Default()

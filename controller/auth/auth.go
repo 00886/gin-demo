@@ -4,6 +4,8 @@ import (
 	"gin-demo/config"
 	"gin-demo/util/jwt"
 	"gin-demo/util/logging"
+	"gin-demo/util/response"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -17,9 +19,7 @@ func Login(r *gin.Context) {
 	userInfo := UserInfo{}
 
 	if err := r.ShouldBindJSON(&userInfo); err != nil {
-		r.JSON(200, gin.H{
-			"code":   1,
-			"mesage": err.Error()})
+		response.Ng(r, err.Error())
 		return
 	}
 	logging.Debug(logrus.Fields{
@@ -30,28 +30,16 @@ func Login(r *gin.Context) {
 	if userInfo.Username == config.Username && userInfo.Password == config.Password {
 		token, err := jwt.GenerToken(userInfo.Username)
 		if err != nil {
-			r.JSON(200, gin.H{
-				"code":   1,
-				"mesage": err,
-			})
+			response.Ng(r, err.Error())
+			return
 		}
 
-		r.JSON(200, gin.H{
-			"code":   0,
-			"mesage": "success",
-			"data":   token,
-		})
+		response.Ok(r, token)
 	} else {
-		r.JSON(200, gin.H{
-			"code":   1,
-			"mesage": "登录失败，请输入正确的用户名和密码",
-		})
+		response.Ng(r, "登录失败，请输入正确的用户名和密码")
 	}
 }
 
-func Logout(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"code":    0,
-		"message": "登出成功",
-	})
+func Logout(r *gin.Context) {
+	response.Ok(r, "登出成功")
 }
